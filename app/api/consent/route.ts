@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
         });
         emailSent = true;
         console.log('Email sent to:', email);
+        await supabase.from('consent_records').update({ email_sent: true, email_sent_at: new Date().toISOString() }).eq('consent_id', consent_id);
       } catch (e: any) {
         console.error('Email error:', e?.message);
       }
