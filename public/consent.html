@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>K-DocFinder 인터뷰 동의</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;600;700;800&family=Noto+Sans+TC:wght@400;600;700;800&family=Noto+Sans+SC:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Noto Sans KR','Noto Sans JP','Noto Sans TC','Noto Sans SC',system-ui,sans-serif;
+  background: #fff; max-width: 480px; margin: 0 auto; min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+.header {
+  background: linear-gradient(135deg, #003CB3 0%, #0057FF 55%, #3388FF 100%);
+  padding: 24px 22px 22px; color: #fff;
+}
+.lang-bar { display:flex; gap:4px; margin-bottom:18px; flex-wrap:wrap; }
+.lang-btn {
+  padding:4px 12px; border-radius:20px; cursor:pointer;
+  border:1.5px solid rgba(255,255,255,0.2); background:transparent;
+  color:#fff; font-size:12px; font-weight:400; font-family:inherit;
+  transition: all 0.15s;
+}
+.lang-btn.active { border-color:rgba(255,255,255,0.6); background:rgba(255,255,255,0.2); font-weight:700; }
+.header h1 { font-size:20px; font-weight:800; line-height:1.35; letter-spacing:-0.3px; }
+.body { padding:18px 22px 110px; }
+.summaries { background:#f7f8fa; border-radius:12px; padding:14px 16px; margin-bottom:14px; }
+.summaries p { font-size:13px; line-height:1.6; padding:5px 0; color:#444; }
+.summaries p:not(:last-child) { border-bottom:1px solid #eceef2; }
+.summaries p.highlight { color:#0052CC; font-weight:600; }
+.toggle-btn {
+  width:100%; padding:11px 16px; background:none;
+  border:1.5px solid #e0e3ea; border-radius:10px; font-size:13px;
+  color:#0052CC; font-weight:600; cursor:pointer;
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:22px; font-family:inherit;
+}
+.toggle-btn .arrow { transition:transform 0.2s; font-size:16px; }
+.toggle-btn.open { margin-bottom:0; border-radius:10px 10px 0 0; }
+.toggle-btn.open .arrow { transform:rotate(180deg); }
+.full-terms {
+  display:none; background:#fafbfc; border:1px solid #e8ebf0;
+  border-radius:0 0 10px 10px; border-top:none;
+  padding:16px 14px; margin-bottom:22px;
+  max-height:360px; overflow:auto; -webkit-overflow-scrolling:touch;
+}
+.full-terms.show { display:block; }
+.full-terms pre {
+  font-size:12px; line-height:1.7; color:#444;
+  white-space:pre-wrap; word-break:break-word;
+  font-family:inherit;
+}
+.field { margin-bottom:16px; }
+.field label { display:block; font-size:12.5px; font-weight:600; color:#555; margin-bottom:5px; }
+.field label .req { color:#e74c3c; }
+.field input {
+  width:100%; padding:11px 14px; border:1.5px solid #e2e5ea;
+  border-radius:10px; font-size:15px; outline:none;
+  font-family:inherit; background:#fff;
+}
+.field input:focus { border-color:#0057FF; }
+.email-hint { font-size:11.5px; color:#0057FF; margin:5px 0 0 2px; line-height:1.4; }
+.checks { background:#f7f8fa; border-radius:12px; padding:2px 16px; margin:8px 0 22px; }
+.check-item {
+  display:flex; gap:12px; padding:14px 0; cursor:pointer;
+  border-bottom:1px solid #f0f1f3; align-items:flex-start;
+}
+.check-item:last-child { border-bottom:none; }
+.check-box {
+  width:24px; height:24px; min-width:24px; border-radius:7px;
+  border:2px solid #cdd1d8; background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  margin-top:1px; transition:all 0.15s;
+}
+.check-item.checked .check-box {
+  border:none; background:#0057FF;
+}
+.check-item .num {
+  display:inline-block; background:#0057FF; color:#fff;
+  font-size:11px; font-weight:700; border-radius:4px;
+  padding:1px 6px; margin-right:6px; vertical-align:middle;
+  position:relative; top:-1px;
+}
+.check-item .main { font-size:14px; font-weight:600; color:#1a1f36; line-height:1.5; }
+.check-item .sub { font-size:12px; color:#7a8599; line-height:1.55; margin-top:4px; }
+.sig-label { display:block; font-size:12.5px; font-weight:600; color:#555; margin-bottom:6px; }
+.sig-wrap { position:relative; margin-bottom:24px; }
+.sig-canvas {
+  width:100%; height:110px; border:1.5px solid #e2e5ea;
+  border-radius:12px; background:#f9fafb; touch-action:none; cursor:crosshair;
+}
+.sig-placeholder {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  color:#b0b8c4; font-size:13px; pointer-events:none; white-space:nowrap;
+}
+.sig-clear {
+  position:absolute; top:8px; right:8px;
+  background:rgba(0,0,0,0.05); border:none; border-radius:6px;
+  padding:3px 10px; font-size:11px; color:#888; cursor:pointer;
+  display:none;
+}
+.submit-btn {
+  width:100%; padding:14px; border-radius:12px; border:none;
+  background:#d5d8de; color:#fff; font-size:16px; font-weight:700;
+  cursor:not-allowed; transition:all 0.2s; font-family:inherit;
+}
+.submit-btn.valid {
+  background:linear-gradient(135deg, #0052CC, #0066FF);
+  cursor:pointer; box-shadow:0 4px 16px rgba(0,87,255,0.25);
+}
+.submit-btn.valid:active { transform:scale(0.98); }
+.error-msg { text-align:center; font-size:12.5px; color:#e74c3c; margin-top:10px; display:none; }
+.footer { text-align:center; font-size:10.5px; color:#b0b8c4; margin-top:20px; line-height:1.6; }
+
+/* Done screen */
+.done-screen {
+  display:none; min-height:100vh; flex-direction:column;
+  align-items:center; justify-content:center; padding:32px;
+  background:linear-gradient(180deg, #f0f5ff 0%, #fff 60%);
+}
+.done-screen.show { display:flex; }
+.done-icon {
+  width:68px; height:68px; border-radius:50%;
+  background:linear-gradient(135deg, #0057FF, #338AFF);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:20px; box-shadow:0 4px 20px rgba(0,87,255,0.25);
+}
+.done-title { font-size:20px; font-weight:800; color:#1a1f36; margin-bottom:6px; text-align:center; }
+.done-msg { font-size:14px; color:#666; text-align:center; margin-bottom:24px; }
+.done-info {
+  background:#f5f7fa; border-radius:12px; padding:16px 20px;
+  font-size:13px; color:#555; line-height:1.8; text-align:center;
+  width:100%; max-width:320px;
+}
+.done-info .name { font-weight:600; color:#1a1f36; }
+.done-info .meta { font-size:11.5px; color:#999; margin-top:2px; }
+.done-withdraw { margin-top:20px; font-size:12px; color:#999; text-align:center; line-height:1.7; }
+.done-withdraw a { color:#0057FF; text-decoration:none; }
+</style>
+</head>
+<body>
+
+<!-- FORM SCREEN -->
+<div id="formScreen">
+  <div class="header">
+    <div class="lang-bar" id="langBar"></div>
+    <h1 id="headerTitle"></h1>
+  </div>
+  <div class="body">
+    <div class="summaries" id="summaries"></div>
+
+    <button class="toggle-btn" id="toggleBtn" onclick="toggleFull()">
+      <span id="toggleText"></span>
+      <span class="arrow">▾</span>
+    </button>
+    <div class="full-terms" id="fullTerms">
+      <pre id="fullTermsText"></pre>
+    </div>
+
+    <div class="field">
+      <label><span id="nameLabel"></span> <span class="req">*</span></label>
+      <input type="text" id="nameInput" oninput="validate()">
+    </div>
+    <div class="field">
+      <label><span id="natLabel"></span> <span class="req">*</span></label>
+      <input type="text" id="natInput" oninput="validate()">
+    </div>
+    <div class="field">
+      <label><span id="emailLabel"></span></label>
+      <input type="email" id="emailInput">
+      <div class="email-hint" id="emailHint"></div>
+    </div>
+
+    <div class="checks" id="checks"></div>
+
+    <div>
+      <label class="sig-label"><span id="sigLabel"></span> <span class="req">*</span></label>
+      <div class="sig-wrap">
+        <canvas class="sig-canvas" id="sigCanvas"></canvas>
+        <div class="sig-placeholder" id="sigPlaceholder"></div>
+        <button class="sig-clear" id="sigClear" onclick="clearSig()">✕</button>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="doSubmit()"></button>
+    <p class="error-msg" id="errorMsg"></p>
+    <p class="footer">© 2026 K-DocFinder (주식회사 닥터랩)<br><span id="footerWithdraw"></span></p>
+  </div>
+</div>
+
+<!-- DONE SCREEN -->
+<div class="done-screen" id="doneScreen">
+  <div class="done-icon">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <path d="M8 16L14 22L24 10" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="done-title" id="doneTitle"></div>
+  <div class="done-msg" id="doneMsg"></div>
+  <div class="done-info">
+    <div class="name" id="doneName"></div>
+    <div class="meta" id="doneId"></div>
+    <div class="meta" id="doneDate"></div>
+  </div>
+  <div class="done-withdraw">
+    <span id="doneSub"></span><br>
+    <a href="mailto:kdocfinder@gmail.com">kdocfinder@gmail.com</a>
+  </div>
+</div>
+
+<script>
+const FULL_KR = `[제1조] 만 19세 이상 확인
+본인은 만 19세 이상(또는 거주국 법률상 성인)임을 확인합니다. 만 19세 미만인 경우 보호자 동의 없이는 인터뷰 촬영에 참여할 수 없습니다.
+
+[제2조] 초상권 사용 동의
+본인은 K-DocFinder가 본인의 영상, 사진, 음성, 인터뷰 발언, 자막, 번역 및 편집본을 사용할 수 있음에 동의합니다.
+
+사용 목적은 K-DocFinder 플랫폼 소개, 웹사이트(www.kdocfinder.com), SNS, 유튜브 및 온라인 홍보 콘텐츠 제작입니다.
+
+본 콘텐츠는 특정 병원, 의원, 의료기관, 의사 또는 의료서비스의 직접 홍보·광고에는 사용되지 않습니다.
+
+K-DocFinder는 인격권을 침해하지 않는 범위에서 다음의 편집을 할 수 있습니다:
+• 영상 길이 조정
+• 자막 삽입 및 번역
+• 색 보정 및 음향 보정
+• 썸네일 제작
+• 숏폼 재편집
+
+사용 기간은 동의일로부터 5년입니다.
+
+[제3조] 개인정보 수집·이용 동의
+K-DocFinder는 아래 목적으로 개인정보를 수집·이용합니다:
+• 인터뷰 참여 및 초상권 사용 동의 사실 확인
+• 촬영 파일과 동의서 매칭
+• 동의 철회 또는 문의 대응
+
+필수 수집 항목: 이름, 국적, 성인 여부 확인, 서명, 촬영일, 촬영장소, 동의서 ID
+선택 수집 항목: 이메일
+
+※ 주소, 전화번호, 주민등록번호, 여권번호는 수집하지 않습니다.
+
+동의서 및 관련 개인정보는 동의일로부터 5년간 보관 후 파기합니다.
+
+참여자는 개인정보 수집·이용에 동의하지 않을 수 있으며, 동의하지 않는 경우 인터뷰 촬영에 참여할 수 없습니다.
+
+[제4조] 동의 철회
+동의자는 언제든 이메일(kdocfinder@gmail.com)로 동의 철회를 요청할 수 있습니다. 회사는 철회 요청 수령 후 30일 이내에 해당 콘텐츠의 신규 게재를 중단합니다. 철회 이전에 적법하게 사용된 콘텐츠에 대해서는 그 효력이 유지됩니다.`;
+
+const FULL_EN = `[Article 1] Age Verification (19+)
+I confirm that I am 19 years of age or older (or a legal adult in my country of residence). Persons under 19 cannot participate without parental/guardian consent.
+
+[Article 2] Consent for Use of Likeness
+I consent to K-DocFinder using my video, photos, voice, interview statements, subtitles, translations, and edited versions.
+
+Purpose: K-DocFinder platform introduction, website (www.kdocfinder.com), SNS, YouTube, and online promotional content production.
+
+This content will NOT be used for direct promotion or advertising of any specific hospital, clinic, medical institution, doctor, or medical service.
+
+K-DocFinder may perform the following edits within bounds that do not infringe on personal rights:
+• Video length adjustment
+• Subtitle insertion and translation
+• Color and audio correction
+• Thumbnail creation
+• Short-form re-editing
+
+Duration of use: 5 years from the date of consent.
+
+[Article 3] Consent for Collection and Use of Personal Information
+K-DocFinder collects and uses personal information for:
+• Verifying interview participation and likeness consent
+• Matching filming files with consent records
+• Responding to withdrawal requests or inquiries
+
+Required items: Name, nationality, adult status confirmation, signature, filming date, filming location, consent ID
+Optional items: Email
+
+※ We do NOT collect: address, phone number, resident registration number, or passport number.
+
+Consent records and related personal information are retained for 5 years from the date of consent, then destroyed.
+
+You may refuse consent to personal information collection; however, refusal will prevent participation in the interview.
+
+[Article 4] Withdrawal of Consent
+You may withdraw consent at any time by emailing kdocfinder@gmail.com. The Company will cease new publication within 30 days. Content lawfully used prior to withdrawal remains in effect.`;
+
+const FULL_JA = `[第1条] 19歳以上の確認
+本人は19歳以上（または居住国の法律上の成人）であることを確認します。19歳未満の方は保護者の同意なしにインタビュー撮影に参加できません。
+
+[第2条] 肖像権使用同意
+本人は、K-DocFinderが本人の映像、写真、音声、インタビュー発言、字幕、翻訳および編集版を使用することに同意します。
+
+使用目的：K-DocFinderプラットフォーム紹介、ウェブサイト、SNS、YouTube、オンラインプロモーションコンテンツ制作。
+
+本コンテンツは、特定の病院、クリニック、医療機関、医師または医療サービスの直接的な宣伝・広告には使用されません。
+
+使用期間：同意日から5年間。
+
+[第3条] 個人情報の収集・利用同意
+必須収集項目：氏名、国籍、成人確認、署名、撮影日、撮影場所、同意書ID
+任意収集項目：メールアドレス
+
+※ 住所、電話番号、住民登録番号、パスポート番号は収集しません。
+
+同意書および関連個人情報は同意日から5年間保管後、破棄されます。`;
+
+const FULL_ZH_CN = `[第1条] 确认年满19岁
+本人确认已年满19岁（或在居住国法律上为成年人）。未满19岁者，未经监护人同意不得参与采访拍摄。
+
+[第2条] 肖像权使用同意
+本人同意 K-DocFinder 使用本人的影片、照片、声音、采访发言、字幕、翻译及编辑版本。
+
+使用目的：K-DocFinder 平台介绍、网站、社交媒体、YouTube 及线上宣传内容制作。
+
+本内容不会用于特定医院、诊所、医疗机构、医生或医疗服务的直接宣传或广告。
+
+使用期限：自同意日起5年。
+
+[第3条] 个人信息收集与使用同意
+必要收集项目：姓名、国籍、成年确认、签名、拍摄日期、拍摄地点、同意书ID
+选择收集项目：电子邮件
+
+※ 不收集：地址、电话号码、身份证号码、护照号码。
+
+同意书及相关个人信息自同意日起保管5年后销毁。`;
+
+const FULL_ZH_TW = `[第1條] 確認年滿19歲
+本人確認已年滿19歲（或在居住國法律上為成年人）。未滿19歲者，未經監護人同意不得參與採訪拍攝。
+
+[第2條] 肖像權使用同意
+本人同意 K-DocFinder 使用本人的影片、照片、聲音、採訪發言、字幕、翻譯及編輯版本。
+
+使用目的：K-DocFinder 平台介紹、網站、社群媒體、YouTube 及線上宣傳內容製作。
+
+本內容不會用於特定醫院、診所、醫療機構、醫師或醫療服務的直接宣傳或廣告。
+
+使用期限：自同意日起5年。
+
+[第3條] 個人資訊收集與使用同意
+必要收集項目：姓名、國籍、成年確認、簽名、拍攝日期、拍攝地點、同意書ID
+選擇收集項目：電子郵件
+
+※ 不收集：地址、電話號碼、身分證號碼、護照號碼。
+
+同意書及相關個人資訊自同意日起保管5年後銷毀。`;
+
+const LANGS = {
+  kr: {
+    title: "K-DocFinder 인터뷰 동의",
+    summaries: [
+      "이 인터뷰 영상은 K-DocFinder 웹사이트, SNS, 유튜브 및 플랫폼 홍보 콘텐츠에 사용될 수 있습니다.",
+      "참가자의 영상, 사진, 음성, 인터뷰 발언은 편집, 번역, 자막 삽입, 숏폼 제작에 사용될 수 있습니다.",
+      "이 콘텐츠는 K-DocFinder 플랫폼 홍보 목적이며, 특정 병원 또는 의료기관의 직접 홍보에는 사용되지 않습니다.",
+    ],
+    showFull: "전체 동의 내용 보기", hideFull: "전체 동의 내용 닫기",
+    nameLabel: "이름", namePh: "이름을 입력하세요",
+    natLabel: "국적", natPh: "국적을 입력하세요",
+    emailLabel: "이메일 (선택)", emailHint: "📩 입력 시 동의서 사본이 이메일로 발송됩니다.",
+    check1: "본인은 만 19세 이상임을 확인합니다.",
+    check1sub: "만 19세 미만인 경우 보호자 동의 없이는 인터뷰 촬영에 참여할 수 없습니다.",
+    check2: "본인의 영상, 사진, 음성 및 인터뷰 발언을 K-DocFinder가 사용하는 것에 동의합니다.",
+    check2sub: "사용 기간: 동의일로부터 5년 · 특정 병원 홍보에는 사용되지 않습니다.",
+    check3: "동의 기록 관리를 위한 개인정보 수집·이용에 동의합니다.",
+    check3sub: "주소, 전화번호, 주민등록번호, 여권번호는 수집하지 않습니다.",
+    signLabel: "서명", signPh: "여기에 서명해 주세요",
+    submit: "제출", required: "필수 항목을 모두 체크하고 서명해 주세요.",
+    doneTitle: "동의가 완료되었습니다", doneMsg: "인터뷰에 참여해 주셔서 감사합니다.",
+    doneSub: "동의 철회가 필요한 경우 아래로 연락해 주세요.",
+    fullText: FULL_KR, withdraw: "동의 철회: kdocfinder@gmail.com",
+  },
+  en: {
+    title: "K-DocFinder Interview Consent",
+    summaries: [
+      "This interview may be used on K-DocFinder's website, SNS, YouTube, and promotional content.",
+      "Your video, photos, voice, and statements may be edited, translated, subtitled, and made into short-form content.",
+      "This content is for K-DocFinder platform promotion only — NOT for direct promotion of specific hospitals.",
+    ],
+    showFull: "View full consent terms", hideFull: "Hide full consent terms",
+    nameLabel: "Name", namePh: "Enter your name",
+    natLabel: "Nationality", natPh: "Enter your nationality",
+    emailLabel: "Email (optional)", emailHint: "📩 A copy of this consent will be sent to your email.",
+    check1: "I confirm that I am 19 years of age or older.",
+    check1sub: "Persons under 19 cannot participate without parental/guardian consent.",
+    check2: "I consent to K-DocFinder using my video, photos, voice, and interview statements.",
+    check2sub: "Duration: 5 years from consent date · Not used for specific hospital promotion.",
+    check3: "I consent to collection and use of my personal information for consent record management.",
+    check3sub: "We do NOT collect: address, phone number, ID number, or passport number.",
+    signLabel: "Signature", signPh: "Sign here",
+    submit: "Submit", required: "Please check all required boxes and sign.",
+    doneTitle: "Consent submitted", doneMsg: "Thank you for participating in the interview.",
+    doneSub: "To withdraw consent, please contact us below.",
+    fullText: FULL_EN, withdraw: "Withdraw: kdocfinder@gmail.com",
+  },
+  ja: {
+    title: "K-DocFinder インタビュー同意",
+    summaries: [
+      "このインタビュー映像は、K-DocFinderのウェブサイト、SNS、YouTube等のプロモーションコンテンツに使用される場合があります。",
+      "参加者の映像、写真、音声、発言は編集、翻訳、字幕挿入、ショートフォーム制作に使用される場合があります。",
+      "このコンテンツはK-DocFinderプラットフォームのプロモーション目的のみであり、特定の病院の直接的な宣伝には使用されません。",
+    ],
+    showFull: "全文を見る", hideFull: "全文を閉じる",
+    nameLabel: "氏名", namePh: "氏名を入力してください",
+    natLabel: "国籍", natPh: "国籍を入力してください",
+    emailLabel: "メール（任意）", emailHint: "📩 入力すると同意書の写しがメールで送信されます。",
+    check1: "本人は19歳以上であることを確認します。",
+    check1sub: "19歳未満の方は保護者の同意なしに参加できません。",
+    check2: "K-DocFinderが本人の映像、写真、音声および発言を使用することに同意します。",
+    check2sub: "使用期間：同意日から5年間・特定の病院の宣伝には使用されません。",
+    check3: "同意記録管理のための個人情報の収集・利用に同意します。",
+    check3sub: "住所、電話番号、住民登録番号、パスポート番号は収集しません。",
+    signLabel: "署名", signPh: "ここに署名してください",
+    submit: "提出", required: "すべての必須項目をチェックし、署名してください。",
+    doneTitle: "同意が完了しました", doneMsg: "インタビューにご参加いただきありがとうございます。",
+    doneSub: "同意の撤回が必要な場合は、以下にご連絡ください。",
+    fullText: FULL_JA, withdraw: "撤回連絡先: kdocfinder@gmail.com",
+  },
+  "zh-cn": {
+    title: "K-DocFinder 采访同意",
+    summaries: [
+      "此采访视频可能会用于 K-DocFinder 网站、社交媒体、YouTube 及宣传内容。",
+      "参与者的视频、照片、声音、发言可能会被编辑、翻译、加字幕、制作短视频。",
+      "此内容仅用于 K-DocFinder 平台推广，不会用于特定医院的直接宣传。",
+    ],
+    showFull: "查看完整同意内容", hideFull: "收起完整同意内容",
+    nameLabel: "姓名", namePh: "请输入姓名",
+    natLabel: "国籍", natPh: "请输入国籍",
+    emailLabel: "电子邮件（选填）", emailHint: "📩 填写后将通过电子邮件发送同意书副本。",
+    check1: "本人确认已年满19岁。",
+    check1sub: "未满19岁者，未经监护人同意不得参与。",
+    check2: "本人同意 K-DocFinder 使用本人的视频、照片、声音及发言。",
+    check2sub: "使用期限：自同意日起5年，不用于特定医院宣传。",
+    check3: "本人同意为同意记录管理目的收集和使用个人信息。",
+    check3sub: "不收集地址、电话号码、身份证号码、护照号码。",
+    signLabel: "签名", signPh: "请在此签名",
+    submit: "提交", required: "请勾选所有必填项目并签名。",
+    doneTitle: "同意已完成", doneMsg: "感谢您参与采访。",
+    doneSub: "如需撤回同意，请通过以下方式联系。",
+    fullText: FULL_ZH_CN, withdraw: "撤回联系: kdocfinder@gmail.com",
+  },
+  "zh-tw": {
+    title: "K-DocFinder 訪問同意",
+    summaries: [
+      "此訪問影片可能會用於 K-DocFinder 網站、社群媒體、YouTube 及宣傳內容。",
+      "參與者的影片、照片、聲音、發言可能會被編輯、翻譯、加字幕、製作短影音。",
+      "此內容僅用於 K-DocFinder 平台推廣，不會用於特定醫院的直接宣傳。",
+    ],
+    showFull: "查看完整同意內容", hideFull: "收起完整同意內容",
+    nameLabel: "姓名", namePh: "請輸入姓名",
+    natLabel: "國籍", natPh: "請輸入國籍",
+    emailLabel: "電子郵件（選填）", emailHint: "📩 填寫後將透過電子郵件發送同意書副本。",
+    check1: "本人確認已年滿19歲。",
+    check1sub: "未滿19歲者，未經監護人同意不得參與。",
+    check2: "本人同意 K-DocFinder 使用本人的影片、照片、聲音及發言。",
+    check2sub: "使用期限：自同意日起5年，不用於特定醫院宣傳。",
+    check3: "本人同意為同意記錄管理目的收集和使用個人資訊。",
+    check3sub: "不收集地址、電話號碼、身分證號碼、護照號碼。",
+    signLabel: "簽名", signPh: "請在此簽名",
+    submit: "提交", required: "請勾選所有必填項目並簽名。",
+    doneTitle: "同意已完成", doneMsg: "感謝您參與訪問。",
+    doneSub: "如需撤回同意，請透過以下方式聯繫。",
+    fullText: FULL_ZH_TW, withdraw: "撤回聯繫: kdocfinder@gmail.com",
+  },
+};
+
+// ============================================
+// API 설정 — 배포 시 실제 URL로 변경
+// ============================================
+const API_URL = '/api/consent';  // Next.js API route
+
+// URL 파라미터에서 촬영 정보 읽기 (예: ?date=2026-06-12&location=명동)
+const urlParams = new URLSearchParams(window.location.search);
+const FILMING_DATE = urlParams.get('date') || new Date().toISOString().split('T')[0];
+const FILMING_LOCATION = urlParams.get('location') || '';
+
+// State
+let currentLang = 'kr';
+let checks = [false, false, false];
+let hasSig = false;
+let fullOpen = false;
+
+// Signature
+const canvas = document.getElementById('sigCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+
+function initCanvas() {
+  const r = canvas.getBoundingClientRect();
+  canvas.width = r.width * 2;
+  canvas.height = r.height * 2;
+  ctx.scale(2, 2);
+  ctx.strokeStyle = '#0f172a';
+  ctx.lineWidth = 2.2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+}
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x: t.clientX - r.left, y: t.clientY - r.top };
+}
+
+canvas.addEventListener('mousedown', e => { e.preventDefault(); drawing=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+canvas.addEventListener('mousemove', e => { if(!drawing)return; e.preventDefault(); const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); });
+canvas.addEventListener('mouseup', () => { if(drawing){drawing=false; hasSig=true; updateSigUI(); validate();} });
+canvas.addEventListener('mouseleave', () => { if(drawing){drawing=false; hasSig=true; updateSigUI(); validate();} });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }, {passive:false});
+canvas.addEventListener('touchmove', e => { if(!drawing)return; e.preventDefault(); const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); }, {passive:false});
+canvas.addEventListener('touchend', () => { if(drawing){drawing=false; hasSig=true; updateSigUI(); validate();} });
+
+function updateSigUI() {
+  document.getElementById('sigPlaceholder').style.display = hasSig ? 'none' : 'block';
+  document.getElementById('sigClear').style.display = hasSig ? 'block' : 'none';
+}
+
+function clearSig() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hasSig = false;
+  updateSigUI();
+  validate();
+}
+
+// Toggle full terms
+function toggleFull() {
+  fullOpen = !fullOpen;
+  const tx = LANGS[currentLang];
+  document.getElementById('fullTerms').classList.toggle('show', fullOpen);
+  document.getElementById('toggleBtn').classList.toggle('open', fullOpen);
+  document.getElementById('toggleText').textContent = fullOpen ? tx.hideFull : tx.showFull;
+}
+
+// Check items
+function toggleCheck(i) {
+  checks[i] = !checks[i];
+  renderChecks();
+  validate();
+}
+
+function renderChecks() {
+  const tx = LANGS[currentLang];
+  const items = [
+    { main: tx.check1, sub: tx.check1sub },
+    { main: tx.check2, sub: tx.check2sub },
+    { main: tx.check3, sub: tx.check3sub },
+  ];
+  const el = document.getElementById('checks');
+  el.innerHTML = items.map((item, i) => `
+    <div class="check-item ${checks[i]?'checked':''}" onclick="toggleCheck(${i})">
+      <div class="check-box">
+        ${checks[i] ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7L6 10L11 4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+      </div>
+      <div>
+        <div class="main"><span class="num">${i+1}</span>${item.main}</div>
+        <div class="sub">${item.sub}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Validation
+function validate() {
+  const name = document.getElementById('nameInput').value.trim();
+  const nat = document.getElementById('natInput').value.trim();
+  const valid = name && nat && checks[0] && checks[1] && checks[2] && hasSig;
+  const btn = document.getElementById('submitBtn');
+  btn.classList.toggle('valid', valid);
+  if (valid) document.getElementById('errorMsg').style.display = 'none';
+  return valid;
+}
+
+// Submit
+function doSubmit() {
+  if (!validate()) {
+    document.getElementById('errorMsg').style.display = 'block';
+    return;
+  }
+  const tx = LANGS[currentLang];
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = '···';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
+
+  const now = new Date();
+  const consentId = 'KDF-' + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+  const name = document.getElementById('nameInput').value.trim();
+  const nat = document.getElementById('natInput').value.trim();
+  const email = document.getElementById('emailInput').value.trim();
+
+  // 서명 데이터 추출
+  const sigData = canvas.toDataURL('image/png');
+
+  const payload = {
+    consent_id: consentId,
+    name: name,
+    nationality: nat,
+    email: email || null,
+    is_adult: checks[0],
+    consent_content: checks[1],
+    consent_privacy: checks[2],
+    signature_data: sigData,
+    filming_date: FILMING_DATE,
+    filming_location: FILMING_LOCATION,
+    language: currentLang,
+  };
+
+  // API 호출
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  .then(res => res.json())
+  .then(data => {
+    showDone(tx, name, nat, consentId, now, data.email_sent);
+  })
+  .catch(err => {
+    console.error('API error:', err);
+    // API 실패해도 완료 화면 표시 (오프라인 대비)
+    showDone(tx, name, nat, consentId, now, false);
+  });
+}
+
+function showDone(tx, name, nat, consentId, now, emailSent) {
+  document.getElementById('formScreen').style.display = 'none';
+  document.getElementById('doneScreen').classList.add('show');
+  document.getElementById('doneTitle').textContent = tx.doneTitle;
+  document.getElementById('doneMsg').textContent = tx.doneMsg;
+  document.getElementById('doneName').textContent = name + ' · ' + nat;
+  document.getElementById('doneId').textContent = 'Consent ID: ' + consentId;
+  document.getElementById('doneDate').textContent = now.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}) + ' ' + now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('doneSub').textContent = tx.doneSub;
+
+  // 이메일 발송 여부 표시
+  if (emailSent) {
+    const emailBadge = document.createElement('div');
+    emailBadge.style.cssText = 'margin-top:12px;padding:8px 16px;background:#e8f5e9;border-radius:8px;font-size:12px;color:#2e7d32;text-align:center;';
+    emailBadge.textContent = '✉️ ' + {
+      kr: '이메일로 동의서 사본이 발송되었습니다.',
+      en: 'A copy has been sent to your email.',
+      ja: '同意書の写しがメールで送信されました。',
+      'zh-cn': '同意书副本已发送至您的邮箱。',
+      'zh-tw': '同意書副本已發送至您的郵箱。',
+    }[currentLang];
+    document.querySelector('.done-info').after(emailBadge);
+  }
+}
+
+// Language switch
+function setLang(lang) {
+  currentLang = lang;
+  const tx = LANGS[lang];
+
+  // Header
+  document.getElementById('headerTitle').textContent = tx.title;
+
+  // Lang buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  // Summaries
+  const sumEl = document.getElementById('summaries');
+  sumEl.innerHTML = tx.summaries.map((s, i) =>
+    `<p class="${i===2?'highlight':''}">${s}</p>`
+  ).join('');
+
+  // Toggle
+  fullOpen = false;
+  document.getElementById('fullTerms').classList.remove('show');
+  document.getElementById('toggleBtn').classList.remove('open');
+  document.getElementById('toggleText').textContent = tx.showFull;
+  document.getElementById('fullTermsText').textContent = tx.fullText;
+
+  // Fields
+  document.getElementById('nameLabel').textContent = tx.nameLabel;
+  document.getElementById('nameInput').placeholder = tx.namePh;
+  document.getElementById('natLabel').textContent = tx.natLabel;
+  document.getElementById('natInput').placeholder = tx.natPh;
+  document.getElementById('emailLabel').textContent = tx.emailLabel;
+  document.getElementById('emailHint').textContent = tx.emailHint;
+
+  // Checks
+  renderChecks();
+
+  // Signature
+  document.getElementById('sigLabel').textContent = tx.signLabel;
+  document.getElementById('sigPlaceholder').textContent = tx.signPh;
+
+  // Submit
+  document.getElementById('submitBtn').textContent = tx.submit;
+  document.getElementById('errorMsg').textContent = tx.required;
+
+  // Footer
+  document.getElementById('footerWithdraw').textContent = tx.withdraw;
+}
+
+// Init
+function init() {
+  const bar = document.getElementById('langBar');
+  const langs = [
+    { c:'kr', l:'한국어' }, { c:'en', l:'English' },
+    { c:'zh-cn', l:'中文' }, { c:'zh-tw', l:'繁體中文' }, { c:'ja', l:'日本語' },
+  ];
+  bar.innerHTML = langs.map(({c,l}) =>
+    `<button class="lang-btn ${c==='kr'?'active':''}" data-lang="${c}" onclick="setLang('${c}')">${l}</button>`
+  ).join('');
+
+  setLang('kr');
+  initCanvas();
+  window.addEventListener('resize', () => { if(!hasSig) initCanvas(); });
+}
+
+init();
+</script>
+</body>
+</html>
